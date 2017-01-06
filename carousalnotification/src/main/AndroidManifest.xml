@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="in.mamga.carousalnotification">
+
+    <application android:allowBackup="true" android:label="@string/app_name"
+        android:supportsRtl="true">
+        <receiver android:name=".CarousalEventReceiver">
+            <intent-filter>
+                <action android:name="in.mamga.CAROUSALNOTIFICATIONFIRED"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
