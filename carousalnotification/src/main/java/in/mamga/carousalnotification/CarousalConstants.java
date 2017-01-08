@@ -14,7 +14,11 @@ public class CarousalConstants {
     public static final int EVENT_OTHER_REGION_CLICKED = 5;
 
 
-
     public static final String EVENT_CAROUSAL_ITEM_CLICKED_KEY = "CarousalItemClicked";
     public static final String CAROUSAL_EVENT_FIRED_INTENT_FILTER = "in.mamga.CAROUSALNOTIFICATIONFIRED";
+    public static final String CAROUSAL_ITEM_CLICKED_INTENT_FILTER = "in.mamga.CAROUSALNOTIFICATIONITEMCLICKED";
+    public static final String CAROUSAL_SET_UP_KEY = "iCAROUSAL_SET_UP_KEY";
+    public static final String CAROUSAL_SMALL_ICON_FILE_NAME = "smallIconCarousal";
+    public static final String CAROUSAL_LARGE_ICON_FILE_NAME = "largeIconCarousal";
+    public static final String CAROUSAL_PLACEHOLDER_ICON_FILE_NAME = "placeHolderIconCarousal";
 }

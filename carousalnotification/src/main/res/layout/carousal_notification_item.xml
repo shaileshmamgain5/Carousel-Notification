@@ -16,32 +16,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="10dp"
             android:paddingLeft="75dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
             android:visibility="visible">
 
             <TextView
+                android:id="@+id/tvCarousalTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:padding="2dp"
                 android:singleLine="true"
-                android:text="Big Title and going way beyond the title length"
+                android:layout_marginTop="10dp"
+                android:text="Big Title sample"
                 android:textColor="@color/carousalTitleTextColor"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="visible"/>
 
             <TextView
+                android:id="@+id/tvCarousalContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:padding="2dp"
                 android:singleLine="false"
+                android:layout_marginBottom="10dp"
                 android:text="Big Description and going way beyond one line length limits and what if it is way beyong 2 lines as well"
-                android:textColor="@color/carousalDescriptionTextColor" />
+                android:textColor="@color/carousalDescriptionTextColor"
+                android:visibility="visible"/>
 
         </LinearLayout>
 
@@ -59,6 +63,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
+                    android:id="@+id/llLeftItemLayout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
@@ -80,18 +85,19 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/how_it_works_host_manage_calender" />
+                        android:src="@drawable/how_it_works_host_manage_calender"
+                        android:visibility="visible"/>
 
                     <TextView
                         android:id="@+id/tvLeftTitleText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="1"
+                        android:maxLines="2"
                         android:paddingBottom="2dp"
                         android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:text="Item Title"
+                        android:singleLine="false"
+                        android:text="Item Title with a new news flashing over things "
                         android:textColor="@color/carousalTitleTextColor"
                         android:textSize="12sp" />
 
@@ -100,16 +106,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="1"
+                        android:maxLines="8"
                         android:paddingBottom="5dp"
                         android:paddingTop="2dp"
-                        android:singleLine="true"
-                        android:text="Item Description"
+                        android:singleLine="false"
+                        android:text="If you little bit ads. Thisyou can switch off AdBlock or similar software for watching a little bit ads. This"
                         android:textColor="@color/carousalDescriptionTextColor"
                         android:textSize="10sp" />
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/llRightItemLayout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"

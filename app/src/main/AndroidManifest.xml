@@ -15,6 +15,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".CarousalItemClickReceiver">
+            <intent-filter>
+                <action android:name="in.mamga.CAROUSALNOTIFICATIONITEMCLICKED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -8,10 +8,11 @@ import android.os.Parcelable;
  */
 
 public class CarousalItem implements Parcelable {
-    String id;
+    String id; //id can store a key id or entire object as a gson string. At developer discretion
     String title;
     String description;
     String photo_url;
+    String image_file_url;
 
 
     /**
@@ -81,11 +82,20 @@ public class CarousalItem implements Parcelable {
         this.photo_url = photo_url;
     }
 
+    public String getImage_file_url() {
+        return image_file_url;
+    }
+
+    public void setImage_file_url(String image_file_url) {
+        this.image_file_url = image_file_url;
+    }
+
     protected CarousalItem(Parcel in) {
         id = in.readString();
         title = in.readString();
         description = in.readString();
         photo_url = in.readString();
+        image_file_url = in.readString();
     }
 
     @Override
@@ -99,6 +109,7 @@ public class CarousalItem implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(photo_url);
+        dest.writeString(image_file_url);
     }
 
     @SuppressWarnings("unused")

@@ -8,7 +8,6 @@
                 <action android:name="in.mamga.CAROUSALNOTIFICATIONFIRED"/>
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
