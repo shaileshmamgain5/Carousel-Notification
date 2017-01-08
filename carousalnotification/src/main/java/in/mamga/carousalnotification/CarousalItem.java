@@ -12,7 +12,8 @@ public class CarousalItem implements Parcelable {
     String title;
     String description;
     String photo_url;
-    String image_file_url;
+    String image_file_location;
+    String image_file_name;
 
 
     /**
@@ -82,12 +83,20 @@ public class CarousalItem implements Parcelable {
         this.photo_url = photo_url;
     }
 
-    public String getImage_file_url() {
-        return image_file_url;
+    public String getImage_file_location() {
+        return image_file_location;
     }
 
-    public void setImage_file_url(String image_file_url) {
-        this.image_file_url = image_file_url;
+    public void setImage_file_location(String image_file_location) {
+        this.image_file_location = image_file_location;
+    }
+
+    public String getImage_file_name() {
+        return image_file_name;
+    }
+
+    public void setImage_file_name(String image_file_name) {
+        this.image_file_name = image_file_name;
     }
 
     protected CarousalItem(Parcel in) {
@@ -95,7 +104,8 @@ public class CarousalItem implements Parcelable {
         title = in.readString();
         description = in.readString();
         photo_url = in.readString();
-        image_file_url = in.readString();
+        image_file_location = in.readString();
+        image_file_name = in.readString();
     }
 
     @Override
@@ -109,7 +119,8 @@ public class CarousalItem implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(photo_url);
-        dest.writeString(image_file_url);
+        dest.writeString(image_file_location);
+        dest.writeString(image_file_name);
     }
 
     @SuppressWarnings("unused")

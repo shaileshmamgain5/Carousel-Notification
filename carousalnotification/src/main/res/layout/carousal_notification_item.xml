@@ -85,7 +85,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/how_it_works_host_manage_calender"
+                        android:src="@drawable/ic_carousal_icon"
                         android:visibility="visible"/>
 
                     <TextView
@@ -137,7 +137,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/how_it_works_host_requests" />
+                        android:src="@drawable/ic_carousal_icon" />
 
                     <TextView
                         android:id="@+id/tvRightTitleText"
@@ -202,7 +202,7 @@
         android:layout_margin="15dp"
         android:padding="5dp"
         android:scaleType="centerInside"
-        android:src="@drawable/how_its_works_icon" />
+        android:src="@drawable/ic_carousal_icon" />
 
 
 </RelativeLayout>

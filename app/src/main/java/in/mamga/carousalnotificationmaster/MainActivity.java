@@ -22,13 +22,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Carousal caraousal = Carousal.getInstance(MainActivity.this);
+                Carousal caraousal = Carousal.getInstance(MainActivity.this).clearCarousalIfExists();
                 caraousal.setBigContentTitle("Choose Among these");
-                caraousal.addCarousalItem(new CarousalItem("Title 1", "description 1", "photourl 1"));
-                caraousal.addCarousalItem(new CarousalItem("Title 2", "description 2", "photourl 2"));
-                caraousal.addCarousalItem(new CarousalItem(null, "description 3", "photourl 3"));
-                caraousal.addCarousalItem(new CarousalItem("Title 4", "description 4", "photourl 4"));
-                caraousal.addCarousalItem(new CarousalItem("Title 5", "description 5", "photourl 5"));
+                caraousal.addCarousalItem(new CarousalItem("id1", "Title 1", "description 1", "https://farm1.staticflickr.com/665/31344887084_21aaed9f86_n.jpg"));
+                caraousal.addCarousalItem(new CarousalItem("id2","Title 2", "description 2", "https://farm1.staticflickr.com/334/31344889064_0da91a8325_n.jpg"));
+                //caraousal.addCarousalItem(new CarousalItem("id2","Title 2", "description 2", null));
+                caraousal.addCarousalItem(new CarousalItem("id3",null, "description 3", "https://farm1.staticflickr.com//641//31344889654_6f84ef8604_n.jpg"));
+                caraousal.addCarousalItem(new CarousalItem("id4","Title 4", "description 4", "https://farm1.staticflickr.com//305//31344890444_5451c48ceb_n.jpg"));
+                caraousal.addCarousalItem(new CarousalItem("id5","Title 5", "description 5", "https://farm1.staticflickr.com//373//31344892684_de564cc252_n.jpg"));
                 caraousal.buildCarousal();
 
             }

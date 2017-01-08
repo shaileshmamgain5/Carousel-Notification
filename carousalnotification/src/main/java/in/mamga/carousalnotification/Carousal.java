@@ -47,6 +47,7 @@ public class Carousal {
     static Bitmap caraousalPlaceholder;
 
     private CarousalItem leftItem, rightItem;
+    private Bitmap leftItemBitmap, rightItemBitmap;
 
     private CarousalSetUp carousalSetUp;
     private String smallIconPath, largeIconPath, placeHolderImagePath; //Stores path of these images if set by user
@@ -248,25 +249,6 @@ public class Carousal {
     }
 
 
-   /* *//**
-     * sets pending intent that will be fired when the user clicks on a item. Consider it similar
-     * to {@link new NotificationCompat.Builder.setContentIntent(PendingIntent)}
-     *
-     * @param intent     : Activity, service or receiver you want to invoke upon click of an item
-     * @param intentType : type of intent --> is it calling service, reciever or activity
-     * @return this instance
-     *//*
-    public Carousal setOnItemClickIntent(Intent intent, IntentType intentType) {
-        if (intent != null && intentType != null) {
-            this.carousalIntent = intent;
-            this.carousalIntentType = intentType;
-        } else {
-            Log.e(TAG, "null parameter");
-        }
-        return this;
-    }*/
-
-
     //=======================================SETTING UP CAROUSAL ===================================//
 
     /**
@@ -275,6 +257,39 @@ public class Carousal {
      * 2) An image download thread will kick in.
      */
     public void buildCarousal() {
+       // initiateCarousalTransaction();
+        if (false)
+        return;
+        boolean isImagesInCarousal = false;
+        int numberofImages = 0;
+        if (carousalItems != null && carousalItems.size() > 0) {
+            for (CarousalItem item : carousalItems) {
+                if (!TextUtils.isEmpty(item.getPhoto_url())) {
+                    isImagesInCarousal = true;
+                    numberofImages++;
+                }
+            }
+            if (isImagesInCarousal) {
+                BasicImageDownloader basicDownloader = new BasicImageDownloader(context, carousalItems
+                        , numberofImages, new BasicImageDownloader.OnDownloadsCompletedListener() {
+                    @Override
+                    public void onComplete() {
+                        initiateCarousalTransaction();
+                    }
+                });
+                basicDownloader.startAllDownloads();
+            } else {
+                //ToDo : Note here no image is there
+                initiateCarousalTransaction();
+            }
+        }
+    }
+
+    /**
+     * Here actual transaction starts
+     * Set up will be saved here
+     */
+    private void initiateCarousalTransaction() {
         currentStartIndex = 0;
         if (carousalItems != null && carousalItems.size() > 0) {
             if (carousalItems.size() == 1) {
@@ -283,7 +298,9 @@ public class Carousal {
                 prepareVariablesForCarousalAndShow(carousalItems.get(currentStartIndex), carousalItems.get(currentStartIndex + 1));
             }
         }
+
     }
+
 
     /**
      * All Item variables are set here. After this showCarousal is hit.
@@ -302,13 +319,15 @@ public class Carousal {
             this.leftItem = leftItem;
             leftItemTitle = leftItem.getTitle();
             leftItemDescription = leftItem.getDescription();
-            // ToDo : Bitmap leftItemBitmap = ......
+            leftItemBitmap = getCarousalBitmap(leftItem);
+
         }
         if (rightItem != null) {
             this.rightItem = rightItem;
             rightItemTitle = rightItem.getTitle();
             rightItemDescription = rightItem.getDescription();
-            // ToDo : Bitmap rightItemBitMap = ......
+            rightItemBitmap = getCarousalBitmap(rightItem);
+
         }
         showCarousal();
     }
@@ -338,17 +357,12 @@ public class Carousal {
             //set up what needs to be visible and what not in the carousal
             setUpCarousalVisibilities(bigView);
 
-
-            //For dummy purposes
-            if (currentStartIndex % 2 == 0) {
-                // Locate and set the Image into customnotificationtext.xml ImageViews
-                bigView.setImageViewResource(R.id.ivImageLeft, R.drawable.how_it_works_host_manage_calender);
-                bigView.setImageViewResource(R.id.ivImageRight, R.drawable.how_it_works_host_requests);
-            } else {
-                bigView.setImageViewResource(R.id.ivImageLeft, R.drawable.how_it_works_host_video);
-                bigView.setImageViewResource(R.id.ivImageRight, R.drawable.how_its_works_icon);
+            if (leftItemBitmap != null) {
+                bigView.setImageViewBitmap(R.id.ivImageLeft, leftItemBitmap);
             }
-
+            if (rightItemBitmap != null) {
+                bigView.setImageViewBitmap(R.id.ivImageRight, rightItemBitmap);
+            }
             bigView.setImageViewBitmap(R.id.ivCarousalAppIcon, largeIcon);
 
             // Locate and set the Text into customnotificationtext.xml TextViews
@@ -380,6 +394,31 @@ public class Carousal {
             Log.e(TAG, "Empty item array or of length less than 2");
         }
 
+    }
+
+    /**
+     * function to retrieve bitmap for the carousal if exists, otherwise send placeholders
+     *
+     * @param item
+     * @return
+     */
+    private Bitmap getCarousalBitmap(CarousalItem item) {
+        Bitmap bitmap = null;
+        if (item != null) {
+            if (!TextUtils.isEmpty(item.getImage_file_name()) && !TextUtils.isEmpty(item.getImage_file_location())) {
+                bitmap = CarousalUtilities.carousalLoadImageFromStorage(item.getImage_file_location(), item.getImage_file_name());
+                //Notice it will execute only if an image actually exists
+                if (bitmap != null)
+                    return bitmap;
+            }
+            //If no bitmap saved, try to send a custom one
+            if (caraousalPlaceholder != null)
+                return caraousalPlaceholder;
+            else if (appIcon != null)
+                return appIcon;
+        }
+
+        return bitmap;
     }
 
 
@@ -515,14 +554,15 @@ public class Carousal {
     /**
      * saves current set up into a {@link CarousalSetUp} object and returns it
      * this object is passed between broadcast receiver and this instance
+     *
      * @return
      */
     private CarousalSetUp saveCarousalSetUp() {
         setUpfilePathOfImages();
-        CarousalSetUp cr = new CarousalSetUp (carousalItems, contentTitle, contentText,
-                 bigContentTitle, bigContentText, carousalNotificationId,
-         currentStartIndex, smallIconPath,  smallIconResourceId,
-         largeIconPath,  placeHolderImagePath, leftItem, rightItem);
+        CarousalSetUp cr = new CarousalSetUp(carousalItems, contentTitle, contentText,
+                bigContentTitle, bigContentText, carousalNotificationId,
+                currentStartIndex, smallIconPath, smallIconResourceId,
+                largeIconPath, placeHolderImagePath, leftItem, rightItem);
         return cr;
     }
 
@@ -553,6 +593,10 @@ public class Carousal {
      */
     public Carousal clearCarousalIfExists() {
         if (carousalItems != null) {
+            for (CarousalItem cr : carousalItems) {
+                if(context.deleteFile(cr.getImage_file_name()))
+                    Log.i(TAG, "Image deleted.");
+            }
             carousalItems.clear();
             // now cancel notification..
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -598,6 +642,7 @@ public class Carousal {
     /**
      * It first checks if it is a new instance and not the old one. If its the case, it just resets all
      * the values using the setup object
+     *
      * @param setUp : {@link CarousalSetUp} object and carries the original set data.
      */
     private void verifyAndSetUpVariables(CarousalSetUp setUp) {
@@ -642,7 +687,7 @@ public class Carousal {
     }
 
     private void onRightItemClicked() {
-       sendItemClickedBroadcast(rightItem);
+        sendItemClickedBroadcast(rightItem);
     }
 
     private void onLeftItemClicked() {
@@ -650,7 +695,7 @@ public class Carousal {
 
     }
 
-    private void sendItemClickedBroadcast (CarousalItem cItem) {
+    private void sendItemClickedBroadcast(CarousalItem cItem) {
         Intent i = new Intent();
         i.setAction(CarousalConstants.CAROUSAL_ITEM_CLICKED_INTENT_FILTER);
         Bundle bundle = new Bundle();
@@ -660,13 +705,12 @@ public class Carousal {
         context.getApplicationContext().sendBroadcast(i);
 
 
-            try {
-
-                clearCarousalIfExists();
-            } catch ( Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "Unable To send notification's pendingIntent");
-            }
+        try {
+            clearCarousalIfExists();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "Unable To send notification's pendingIntent");
+        }
 
 
     }
@@ -694,7 +738,7 @@ public class Carousal {
                     break;
             }
         } else {
-            Toast.makeText(context, "CLicked" + "Empty Array" , Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "CLicked" + "Empty Array", Toast.LENGTH_LONG).show();
         }
     }
 

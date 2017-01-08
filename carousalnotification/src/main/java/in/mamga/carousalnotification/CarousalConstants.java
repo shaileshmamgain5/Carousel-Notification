@@ -15,6 +15,7 @@ public class CarousalConstants {
 
 
     public static final String EVENT_CAROUSAL_ITEM_CLICKED_KEY = "CarousalItemClicked";
+    public static final String CAROUSAL_IMAGE_BEGENNING = "CarousalImage";
     public static final String CAROUSAL_EVENT_FIRED_INTENT_FILTER = "in.mamga.CAROUSALNOTIFICATIONFIRED";
     public static final String CAROUSAL_ITEM_CLICKED_INTENT_FILTER = "in.mamga.CAROUSALNOTIFICATIONITEMCLICKED";
     public static final String CAROUSAL_SET_UP_KEY = "iCAROUSAL_SET_UP_KEY";
