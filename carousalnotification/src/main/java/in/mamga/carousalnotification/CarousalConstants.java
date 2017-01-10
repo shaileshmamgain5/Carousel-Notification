@@ -6,7 +6,6 @@ package in.mamga.carousalnotification;
 
 public class CarousalConstants {
 
-
     public static final int EVENT_LEFT_ARROW_CLICKED = 1;
     public static final int EVENT_RIGHT_ARROW_CLICKED = 2;
     public static final int EVENT_LEFT_ITEM_CLICKED = 3;

@@ -14,21 +14,10 @@ public class CarousalItem implements Parcelable {
     String photo_url;
     String image_file_location;
     String image_file_name;
+    String type;
 
 
-    /**
-     * Constructor without id. Not recommended as it is hard to tell which item was clicked
-     * @param title
-     * @param description
-     * @param photo_url
-     */
-    public CarousalItem(String title, String description, String photo_url) {
-        this(null, title, description, photo_url);
-    }
 
-    public CarousalItem(String description, String photo_url) {
-        this(null, null, description, photo_url);
-    }
     public CarousalItem( String photo_url) {
         this(null, null, null, photo_url);
     }
@@ -99,6 +88,14 @@ public class CarousalItem implements Parcelable {
         this.image_file_name = image_file_name;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     protected CarousalItem(Parcel in) {
         id = in.readString();
         title = in.readString();
@@ -106,6 +103,7 @@ public class CarousalItem implements Parcelable {
         photo_url = in.readString();
         image_file_location = in.readString();
         image_file_name = in.readString();
+        type = in.readString();
     }
 
     @Override
@@ -121,6 +119,7 @@ public class CarousalItem implements Parcelable {
         dest.writeString(photo_url);
         dest.writeString(image_file_location);
         dest.writeString(image_file_name);
+        dest.writeString(type);
     }
 
     @SuppressWarnings("unused")

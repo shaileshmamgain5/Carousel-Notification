@@ -9,26 +9,55 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:gravity="center"
     tools:context="in.mamga.carousalnotificationmaster.MainActivity">
-
-    <Button
-        android:id="@+id/btnCarousalWithoutAction"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="Carousal without Action"
-        android:textSize="16sp" />
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnQuote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Quotes"
+            android:textSize="16sp"
+            android:layout_weight="1"/>
 
-    <Button
-        android:id="@+id/btnCarousalWithAction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="Carousal with Action"
-        android:textSize="16sp" />
+        <Button
+            android:id="@+id/btnMovies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="See Mars "
+            android:textSize="16sp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvCurrentStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_margin="10dp"/>
+            <TextView
+                android:id="@+id/tvResponse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+    </ScrollView>
+
+
 </LinearLayout>

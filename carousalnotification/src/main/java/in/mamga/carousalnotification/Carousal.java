@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -52,6 +51,9 @@ public class Carousal {
     private CarousalSetUp carousalSetUp;
     private String smallIconPath, largeIconPath, placeHolderImagePath; //Stores path of these images if set by user
 
+    private boolean isOtherRegionClickable = false;
+    private boolean isImagesInCarousal = true;
+
 
     public static final String CAROUSAL_ITEM_CLICKED_KEY = "CarousalNotificationItemClickedKey";
 
@@ -66,7 +68,7 @@ public class Carousal {
      * @param context : Required for Notifications
      * @return carousal instance of this class
      */
-    public static Carousal getInstance(Context context) {
+    public static Carousal with(Context context) {
         if (carousal == null) {
             synchronized (Carousal.class) {
                 if (carousal == null) {
@@ -86,6 +88,15 @@ public class Carousal {
 
 
     //=========================================CAROUSAL SETTERS ===================================//
+
+    /**
+     * function to begin carousal trnsaction
+     * It only cleans up existing carousal if exists
+     */
+    public Carousal beginTransaction() {
+        clearCarousalIfExists();
+        return this;
+    }
 
     /**
      * function to add a carousal item to the array-list
@@ -248,6 +259,11 @@ public class Carousal {
         return this;
     }
 
+    public Carousal setOtherRegionClickable(boolean isOtherRegionClickable) {
+        this.isOtherRegionClickable = isOtherRegionClickable;
+        return this;
+    }
+
 
     //=======================================SETTING UP CAROUSAL ===================================//
 
@@ -260,16 +276,16 @@ public class Carousal {
        // initiateCarousalTransaction();
         if (false)
         return;
-        boolean isImagesInCarousal = false;
+        boolean isImagesInCarous = false;
         int numberofImages = 0;
         if (carousalItems != null && carousalItems.size() > 0) {
             for (CarousalItem item : carousalItems) {
                 if (!TextUtils.isEmpty(item.getPhoto_url())) {
-                    isImagesInCarousal = true;
+                    isImagesInCarous = true;
                     numberofImages++;
                 }
             }
-            if (isImagesInCarousal) {
+            if (isImagesInCarous) {
                 BasicImageDownloader basicDownloader = new BasicImageDownloader(context, carousalItems
                         , numberofImages, new BasicImageDownloader.OnDownloadsCompletedListener() {
                     @Override
@@ -279,7 +295,7 @@ public class Carousal {
                 });
                 basicDownloader.startAllDownloads();
             } else {
-                //ToDo : Note here no image is there
+                this.isImagesInCarousal = false;
                 initiateCarousalTransaction();
             }
         }
@@ -357,32 +373,26 @@ public class Carousal {
             //set up what needs to be visible and what not in the carousal
             setUpCarousalVisibilities(bigView);
 
-            if (leftItemBitmap != null) {
-                bigView.setImageViewBitmap(R.id.ivImageLeft, leftItemBitmap);
-            }
-            if (rightItemBitmap != null) {
-                bigView.setImageViewBitmap(R.id.ivImageRight, rightItemBitmap);
-            }
-            bigView.setImageViewBitmap(R.id.ivCarousalAppIcon, largeIcon);
-
-            // Locate and set the Text into customnotificationtext.xml TextViews
-            bigView.setTextViewText(R.id.tvCarousalTitle, bigContentTitle);
-            bigView.setTextViewText(R.id.tvCarousalContent, bigContentText);
-            bigView.setTextViewText(R.id.tvRightTitleText, rightItemTitle);
-            bigView.setTextViewText(R.id.tvRightDescriptionText, rightItemDescription);
-            bigView.setTextViewText(R.id.tvLeftTitleText, leftItemTitle);
-            bigView.setTextViewText(R.id.tvLeftDescriptionText, leftItemDescription);
-
-
+            setUpCarousalItems(bigView);
             setPendingIntents(bigView);
+
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context);
-
-
             mBuilder.setContentTitle(contentTitle).setContentText(contentText)
                     .setSmallIcon(smallIconResourceId).setLargeIcon(largeIcon)
                     .setPriority(notificationPriority);
+
+            if (isOtherRegionClickable) {
+                Intent carousalIntent = new Intent(CarousalConstants.CAROUSAL_EVENT_FIRED_INTENT_FILTER);
+                Bundle bundle = new Bundle();
+                bundle.putInt(CarousalConstants.EVENT_CAROUSAL_ITEM_CLICKED_KEY, CarousalConstants.EVENT_OTHER_REGION_CLICKED);
+                bundle.putParcelable(CarousalConstants.CAROUSAL_SET_UP_KEY, carousalSetUp);
+                carousalIntent.putExtras(bundle);
+                PendingIntent pIntent = PendingIntent.getBroadcast(context, CarousalConstants.EVENT_OTHER_REGION_CLICKED, carousalIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                mBuilder.setContentIntent(pIntent);
+            }
+
 
             foregroundNote = mBuilder.build();
             foregroundNote.bigContentView = bigView;
@@ -470,6 +480,13 @@ public class Carousal {
         } else {
             bigView.setViewVisibility(R.id.tvRightDescriptionText, View.VISIBLE);
         }
+        if (!isImagesInCarousal) {
+            bigView.setViewVisibility(R.id.ivImageLeft, View.GONE);
+            bigView.setViewVisibility(R.id.ivImageRight, View.GONE);
+        } else {
+            bigView.setViewVisibility(R.id.ivImageLeft, View.VISIBLE);
+            bigView.setViewVisibility(R.id.ivImageRight, View.VISIBLE);
+        }
 
     }
 
@@ -518,6 +535,25 @@ public class Carousal {
     }
 
     /**
+     * sets us carousal items into the view.
+     */
+    private void setUpCarousalItems(RemoteViews bigView) {
+        if (leftItemBitmap != null) {
+            bigView.setImageViewBitmap(R.id.ivImageLeft, leftItemBitmap);
+        }
+        if (rightItemBitmap != null) {
+            bigView.setImageViewBitmap(R.id.ivImageRight, rightItemBitmap);
+        }
+        bigView.setImageViewBitmap(R.id.ivCarousalAppIcon, largeIcon);
+        bigView.setTextViewText(R.id.tvCarousalTitle, bigContentTitle);
+        bigView.setTextViewText(R.id.tvCarousalContent, bigContentText);
+        bigView.setTextViewText(R.id.tvRightTitleText, rightItemTitle);
+        bigView.setTextViewText(R.id.tvRightDescriptionText, rightItemDescription);
+        bigView.setTextViewText(R.id.tvLeftTitleText, leftItemTitle);
+        bigView.setTextViewText(R.id.tvLeftDescriptionText, leftItemDescription);
+    }
+
+    /**
      * creates pending intents for the clickable regions of the notification
      */
     private void setPendingIntents(RemoteViews bigView) {
@@ -529,10 +565,10 @@ public class Carousal {
         bigView.setOnClickPendingIntent(R.id.ivArrowLeft, leftArrowPendingIntent);
         //right item
         PendingIntent rightItemPendingIntent = getPendingIntent(CarousalConstants.EVENT_RIGHT_ITEM_CLICKED);
-        bigView.setOnClickPendingIntent(R.id.ivImageRight, rightItemPendingIntent);
+        bigView.setOnClickPendingIntent(R.id.llRightItemLayout, rightItemPendingIntent);
         //left item
         PendingIntent leftItemPendingIntent = getPendingIntent(CarousalConstants.EVENT_LEFT_ITEM_CLICKED);
-        bigView.setOnClickPendingIntent(R.id.ivImageLeft, leftItemPendingIntent);
+        bigView.setOnClickPendingIntent(R.id.llLeftItemLayout, leftItemPendingIntent);
     }
 
     /**
@@ -561,8 +597,8 @@ public class Carousal {
         setUpfilePathOfImages();
         CarousalSetUp cr = new CarousalSetUp(carousalItems, contentTitle, contentText,
                 bigContentTitle, bigContentText, carousalNotificationId,
-                currentStartIndex, smallIconPath, smallIconResourceId,
-                largeIconPath, placeHolderImagePath, leftItem, rightItem);
+                currentStartIndex, smallIconPath, smallIconResourceId, largeIconPath,
+                placeHolderImagePath, leftItem, rightItem, isOtherRegionClickable, isImagesInCarousal);
         return cr;
     }
 
@@ -593,11 +629,26 @@ public class Carousal {
      */
     public Carousal clearCarousalIfExists() {
         if (carousalItems != null) {
-            for (CarousalItem cr : carousalItems) {
+            /*for (CarousalItem cr : carousalItems) {
+                if (cr.getImage_file_name() != null)
                 if(context.deleteFile(cr.getImage_file_name()))
                     Log.i(TAG, "Image deleted.");
-            }
+            }*/
             carousalItems.clear();
+
+            smallIconResourceId = -1;
+            isOtherRegionClickable = false;
+            isImagesInCarousal = true;
+            smallIcon = null;
+            smallIconPath = null;
+            largeIcon = null;
+            placeHolderImagePath = null;
+            caraousalPlaceholder = null;
+            contentText = null;
+            contentTitle = null;
+            bigContentText = null;
+            bigContentTitle = null;
+
             // now cancel notification..
             NotificationManager mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotifyManager.cancel(carousalNotificationId);
@@ -633,11 +684,13 @@ public class Carousal {
                 onRightItemClicked();
                 break;
             case CarousalConstants.EVENT_OTHER_REGION_CLICKED:
+                onOtherRegionClicked ();
                 break;
             default:
                 break;
         }
     }
+
 
     /**
      * It first checks if it is a new instance and not the old one. If its the case, it just resets all
@@ -661,6 +714,8 @@ public class Carousal {
             placeHolderImagePath = setUp.caraousalPlaceholder;
             leftItem = setUp.leftItem;
             rightItem = setUp.rightItem;
+            isOtherRegionClickable = setUp.isOtherRegionClickable;
+            isImagesInCarousal = setUp.isImagesInCarousal;
 
 
             setUpBitCarousalBitmapsFromSetUp();
@@ -695,6 +750,27 @@ public class Carousal {
 
     }
 
+    /**
+     * This is caused when any other region than carousal items is clicked.
+     */
+    private void onOtherRegionClicked() {
+        if (isOtherRegionClickable) {
+            //We will send the broadcast and finish the carousal
+            Intent i = new Intent();
+            i.setAction(CarousalConstants.CAROUSAL_ITEM_CLICKED_INTENT_FILTER);
+            Bundle bundle = new Bundle();
+            i.putExtras(bundle);
+            context.getApplicationContext().sendBroadcast(i);
+            try {
+                clearCarousalIfExists();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "Unable To send notification's pendingIntent");
+            }
+        }
+
+    }
+
     private void sendItemClickedBroadcast(CarousalItem cItem) {
         Intent i = new Intent();
         i.setAction(CarousalConstants.CAROUSAL_ITEM_CLICKED_INTENT_FILTER);
@@ -711,8 +787,6 @@ public class Carousal {
             e.printStackTrace();
             Log.e(TAG, "Unable To send notification's pendingIntent");
         }
-
-
     }
 
     /**
@@ -737,8 +811,6 @@ public class Carousal {
                     prepareVariablesForCarousalAndShow(carousalItems.get(currentStartIndex), carousalItems.get(currentStartIndex + 1));
                     break;
             }
-        } else {
-            Toast.makeText(context, "CLicked" + "Empty Array", Toast.LENGTH_LONG).show();
         }
     }
 

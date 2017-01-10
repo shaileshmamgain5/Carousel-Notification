@@ -29,9 +29,10 @@
                 android:padding="2dp"
                 android:singleLine="true"
                 android:layout_marginTop="10dp"
-                android:text="Big Title sample"
+                android:text=""
+                android:textSize="16sp"
                 android:textColor="@color/carousalTitleTextColor"
-                android:textStyle="bold"
+                android:textStyle="normal"
                 android:visibility="visible"/>
 
             <TextView
@@ -42,8 +43,9 @@
                 android:maxLines="2"
                 android:padding="2dp"
                 android:singleLine="false"
-                android:layout_marginBottom="10dp"
-                android:text="Big Description and going way beyond one line length limits and what if it is way beyong 2 lines as well"
+                android:layout_marginBottom="6dp"
+                android:textSize="14sp"
+                android:text=""
                 android:textColor="@color/carousalDescriptionTextColor"
                 android:visibility="visible"/>
 
@@ -76,7 +78,8 @@
                     android:paddingBottom="5dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="5dp"
-                    android:paddingTop="5dp">
+                    android:paddingTop="5dp"
+                    android:clickable="true">
 
                     <ImageView
                         android:id="@+id/ivImageLeft"
@@ -96,23 +99,22 @@
                         android:maxLines="2"
                         android:paddingBottom="2dp"
                         android:paddingTop="5dp"
-                        android:singleLine="false"
-                        android:text="Item Title with a new news flashing over things "
+                        android:text=""
                         android:textColor="@color/carousalTitleTextColor"
-                        android:textSize="12sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tvLeftDescriptionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="8"
+                        android:maxLines="10"
                         android:paddingBottom="5dp"
                         android:paddingTop="2dp"
                         android:singleLine="false"
-                        android:text="If you little bit ads. Thisyou can switch off AdBlock or similar software for watching a little bit ads. This"
+                        android:text=""
                         android:textColor="@color/carousalDescriptionTextColor"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -144,26 +146,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="1"
+                        android:maxLines="2"
                         android:paddingBottom="2dp"
                         android:paddingTop="5dp"
-                        android:singleLine="true"
-                        android:text="Item Title"
+                        android:text=""
                         android:textColor="@color/carousalTitleTextColor"
-                        android:textSize="12sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tvRightDescriptionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="1"
+                        android:maxLines="10"
                         android:paddingBottom="5dp"
                         android:paddingTop="2dp"
-                        android:singleLine="true"
-                        android:text="Item Description"
+                        android:text=""
                         android:textColor="@color/carousalDescriptionTextColor"
-                        android:textSize="10sp" />
+                        android:textSize="12sp" />
 
                 </LinearLayout>
             </LinearLayout>

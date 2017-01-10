@@ -1,41 +1,197 @@
 package in.mamga.carousalnotificationmaster;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import in.mamga.carousalnotification.Carousal;
 import in.mamga.carousalnotification.CarousalItem;
 
 public class MainActivity extends AppCompatActivity {
+    Button btnQuote;
+    Button btnNasa;
+    TextView tvStatus;
+    TextView tvResponse;
+    ProgressDialog progressDialog;
+
+    private final String FETCHING = "Status = fetching data";
+    private final String BUILDING_CAROUSAL = "Status = Data detched. building carousal";
+    private final String CAROUSALPREPARING = "Status = Caraousal preparing. will be be up in few seconds!";
+    private final String FETCHING_ERROR = "Status = Seems like this url is not working. Should try others.";
+    private final String PARSING_ERROR = "Status = Seems like data format of this spi has changed. Should try others.";
+
+
+    public static final String TYPE_QUOTE = "Quote";
+    public static final String TYPE_IMAGE_MARS = "MarsImage";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button btnCarousalWithoutAction = (Button) findViewById(R.id.btnCarousalWithoutAction);
+        setUpLayout();
 
-        btnCarousalWithoutAction.setOnClickListener(new View.OnClickListener() {
+        onNewIntent(getIntent());
+    }
+
+    private void setUpLayout() {
+        btnQuote  = (Button) findViewById(R.id.btnQuote);
+        btnNasa = (Button) findViewById(R.id.btnMovies);
+        tvStatus = (TextView) findViewById(R.id.tvCurrentStatus);
+        tvResponse = (TextView) findViewById(R.id.tvResponse);
+        btnQuote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Carousal caraousal = Carousal.getInstance(MainActivity.this).clearCarousalIfExists();
-                caraousal.setBigContentTitle("Choose Among these");
-                caraousal.addCarousalItem(new CarousalItem("id1", "Title 1", "description 1", "https://farm1.staticflickr.com/665/31344887084_21aaed9f86_n.jpg"));
-                caraousal.addCarousalItem(new CarousalItem("id2","Title 2", "description 2", "https://farm1.staticflickr.com/334/31344889064_0da91a8325_n.jpg"));
-                //caraousal.addCarousalItem(new CarousalItem("id2","Title 2", "description 2", null));
-                caraousal.addCarousalItem(new CarousalItem("id3",null, "description 3", "https://farm1.staticflickr.com//641//31344889654_6f84ef8604_n.jpg"));
-                caraousal.addCarousalItem(new CarousalItem("id4","Title 4", "description 4", "https://farm1.staticflickr.com//305//31344890444_5451c48ceb_n.jpg"));
-                caraousal.addCarousalItem(new CarousalItem("id5","Title 5", "description 5", "https://farm1.staticflickr.com//373//31344892684_de564cc252_n.jpg"));
-                caraousal.buildCarousal();
-
+                fetchQuotes();
             }
         });
 
-        onNewIntent(getIntent());
+        btnNasa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchMarsPhotos();
+            }
+        });
+    }
+
+    private void fetchMarsPhotos() {
+        tvStatus.setText( FETCHING);
+        showDialog("Fetching Photos");
+        JSONParser.OnConnectionListener onConnectionListener = new JSONParser.OnConnectionListener() {
+            @Override
+            public void onResponse(String s) {
+                hideDialog();
+                tvStatus.setText( BUILDING_CAROUSAL);
+                tvResponse.setText("Fetched Result = " + s);
+                buildMarsCarousal(s);
+            }
+
+            @Override
+            public void onError() {
+                hideDialog();
+                tvStatus.setText(FETCHING_ERROR);
+
+            }
+        };
+        JSONParser jsonParser = new JSONParser(onConnectionListener);
+        jsonParser.fetchJson("https://mars-photos.herokuapp.com/api/v1/rovers/opportunity/photos?earth_date=2015-6-3&camera=pancam");
+
+    }
+
+    /**
+     * once we receive data from api, we start building the carousal
+     * @param s : response string
+     */
+    private void buildMarsCarousal(String s) {
+
+        ArrayList<RoverItem> photoList = new ArrayList<RoverItem>();
+        try {
+            JSONObject photoOb = new JSONObject(s);
+            JSONArray photos = photoOb.getJSONArray("photos");
+            Type type = new TypeToken<RoverItem>() {
+            }.getType();
+            for (int i = 0; i < photos.length() && i < 10 ; i = i + 4 ) {
+
+                RoverItem item = new Gson().fromJson(photos.get(i).toString(), type);
+                photoList.add(item);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            tvStatus.setText(PARSING_ERROR);
+        }
+
+        if (photoList.size() > 0) {
+            tvStatus.setText(CAROUSALPREPARING);
+            //Here we build the carousal
+            Carousal carousal = Carousal.with(this).beginTransaction();
+            carousal.setContentTitle("Opportunity on Mars!").setContentText("Check out these photographs by Opportunity on Mars.");
+            for ( RoverItem photo : photoList) {
+
+                //Notice here. In case you want to preserve data of each item, you can save a gson string
+                // of the object in carousal item's id.  Though not much recommended.
+
+                CarousalItem cItem = new CarousalItem(new Gson().toJson(photo).toString(), photo.getEarth_date(), null, photo.getImg_src());
+
+                //Additionally we can set a type to it. It is useful if we are showing more than one type
+                //of data in carousal. so that we know, where to go when an item is clicked.
+                cItem.setType(TYPE_IMAGE_MARS);
+                carousal.addCarousalItem(cItem);
+            }
+            carousal.buildCarousal();
+        }
+    }
+
+    private void fetchQuotes() {
+        tvStatus.setText( FETCHING);
+        showDialog("Fetching Quotes");
+        JSONParser.OnConnectionListener onConnectionListener = new JSONParser.OnConnectionListener() {
+            @Override
+            public void onResponse(String s) {
+                hideDialog();
+                tvStatus.setText( BUILDING_CAROUSAL);
+                tvResponse.setText("Fetched Result = " + s);
+                buildQuoteCarousal(s);
+            }
+
+            @Override
+            public void onError() {
+                hideDialog();
+                tvStatus.setText(FETCHING_ERROR);
+
+            }
+        };
+        JSONParser jsonParser = new JSONParser(onConnectionListener);
+        jsonParser.fetchJson("http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=10");
+
+    }
+
+    /**
+     * once we receive data from api, we start building the carousal
+     * @param s : response string
+     */
+    private void buildQuoteCarousal(String s) {
+        ArrayList<QuoteItem> quotesList = new ArrayList<QuoteItem>();
+        try {
+            JSONArray quotes = new JSONArray(s);
+            for (int i = 0; i < quotes.length() ; i++) {
+                JSONObject quote = (JSONObject) quotes.get(i);
+                quotesList.add(new QuoteItem(quote.getInt("ID"), quote.getString("title"), quote.getString("content")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            tvStatus.setText(PARSING_ERROR);
+        }
+
+        if (quotesList.size() > 0) {
+            tvStatus.setText(CAROUSALPREPARING);
+            //Here we build the carousal
+            Carousal carousal = Carousal.with(this).beginTransaction();
+            carousal.setContentTitle("Quotes from everywhere!").setContentText("Notice these random quotes from around the world")
+                    .setBigContentTitle("Quotes from everywhere!").setBigContentText("Notice these random quotes from around the world");
+            for ( QuoteItem item : quotesList) {
+                CarousalItem cItem = new CarousalItem(item.getID()+"", item.getTitle(), item.getContent(),null);
+
+                //Additionally we can set a type to it. It is useful if we are showing more than one type
+                //of data in carousal. so that we know, where to go when an item is clicked.
+                cItem.setType(TYPE_QUOTE);
+                carousal.addCarousalItem(cItem);
+            }
+            carousal.buildCarousal();
+        }
     }
 
     @Override
@@ -47,7 +203,18 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, carousalItem.getTitle() + carousalItem.getDescription(), Toast.LENGTH_LONG).show();
             }
         }
+    }
 
+    private void showDialog(String message) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(message);
+        progressDialog.show();
+    }
 
+    private void hideDialog() {
+        if (progressDialog != null) {
+            progressDialog.hide();
+            progressDialog = null;
+        }
     }
 }

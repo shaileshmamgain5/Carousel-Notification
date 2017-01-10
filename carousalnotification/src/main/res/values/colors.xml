@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="carousalTitleTextColor">#0f0f0f</color>
-    <color name="carousalDescriptionTextColor">#1f1f1f</color>
+    <color name="carousalTitleTextColor">#39393c</color>
+    <color name="carousalDescriptionTextColor">#39393c</color>
     <color name="carousalNotificationBackgroundColor">#f2f2f2</color>
     <color name="carousalItemCardBackgroundColor">#ffffff</color>
 </resources>

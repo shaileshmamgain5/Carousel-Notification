@@ -43,6 +43,9 @@ public class CarousalUtilities {
         return bitmap;
     }
 
+    /**
+     * retrieves app icon resource id
+     * **/
     public static int carousalGetAppIconResourceId(Context context) {
         int appIconResId = -1;
         String packageName = context.getPackageName();
@@ -63,6 +66,13 @@ public class CarousalUtilities {
         return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
     }
 
+    /**
+     * saves bitmap to internal storage
+     * @param context
+     * @param bitmapImage
+     * @param fileName
+     * @return
+     */
     public static String carousalSaveBitmapToInternalStorage(Context context, Bitmap bitmapImage, String fileName) {
         boolean fileSaved = false;
         ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
@@ -92,6 +102,12 @@ public class CarousalUtilities {
             return null;
     }
 
+    /**
+     * Returns image from internal storage
+     * @param path
+     * @param fileName
+     * @return
+     */
     public static Bitmap carousalLoadImageFromStorage(String path, String fileName) {
         Bitmap b = null;
 
@@ -104,6 +120,14 @@ public class CarousalUtilities {
         return b;
     }
 
+    /**
+     * returns inSampleSize of an image for scaling
+     * @param width : current width
+     * @param height : current height
+     * @param reqWidth : required width
+     * @param reqHeight : required height
+     * @return inSmplesize --> power of 2
+     */
     public static int carousalCalculateInSampleSize(
             final int width, final int height, int reqWidth, int reqHeight) {
         // Raw height and width of image

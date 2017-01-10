@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
+ * Downloads carousal images and saves it into a file
  * @author Vadim Zuev
  * @version 1.1
  */

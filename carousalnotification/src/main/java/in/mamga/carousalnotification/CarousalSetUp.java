@@ -7,6 +7,8 @@ import android.support.v7.app.NotificationCompat;
 import java.util.ArrayList;
 
 /**
+ * It contains basic information abour carousal once it is built.
+ * Purpose is to reset implements Parcelable {@link Carousal} instance in case it is killed during the process
  * Created by Shailesh on 08/01/17.
  */
 
@@ -23,14 +25,14 @@ public class CarousalSetUp implements Parcelable {
 
     public  int currentStartIndex = 0; //Variable that keeps track of where the startIndex is
     public int notificationPriority = NotificationCompat.PRIORITY_DEFAULT;
-
-    //ToDo :  save all bitmaps into a file and keep the file url here
     public String smallIcon;
     public int smallIconResourceId = -1; //check before setting it that it does exists
     public String largeIcon;
     public String caraousalPlaceholder;
     public CarousalItem leftItem;
     public CarousalItem rightItem;
+    public boolean isOtherRegionClickable = false;
+    public boolean isImagesInCarousal = true;
 
     public CarousalSetUp() {
         //default set up
@@ -39,7 +41,8 @@ public class CarousalSetUp implements Parcelable {
     public CarousalSetUp (ArrayList<CarousalItem> carousalItems, String contentTitle, String contentText,
                           String bigContentTitle, String bigContentText, int carousalNotificationId,
                           int currentStartIndex,String smallIcon, int smallIconResourceId,
-                          String largeIcon, String caraousalPlaceholder, CarousalItem leftItem, CarousalItem rightItem) {
+                          String largeIcon, String caraousalPlaceholder, CarousalItem leftItem,
+                          CarousalItem rightItem, boolean isOtherRegionClickable, boolean isImagesInCarousal) {
         this.carousalItems = carousalItems;
         this.contentTitle = contentTitle;
         this.contentText = contentText;
@@ -53,7 +56,10 @@ public class CarousalSetUp implements Parcelable {
         this.caraousalPlaceholder = caraousalPlaceholder;
         this.leftItem = leftItem;
         this.rightItem = rightItem;
+        this.isOtherRegionClickable = isOtherRegionClickable;
+        this.isImagesInCarousal = isImagesInCarousal;
     }
+
 
 
     protected CarousalSetUp(Parcel in) {
@@ -76,6 +82,8 @@ public class CarousalSetUp implements Parcelable {
         caraousalPlaceholder = in.readString();
         leftItem = (CarousalItem) in.readValue(CarousalItem.class.getClassLoader());
         rightItem = (CarousalItem) in.readValue(CarousalItem.class.getClassLoader());
+        isOtherRegionClickable = in.readByte() != 0x00;
+        isImagesInCarousal = in.readByte() != 0x00;
     }
 
     @Override
@@ -104,6 +112,8 @@ public class CarousalSetUp implements Parcelable {
         dest.writeString(caraousalPlaceholder);
         dest.writeValue(leftItem);
         dest.writeValue(rightItem);
+        dest.writeByte((byte) (isOtherRegionClickable ? 0x01 : 0x00));
+        dest.writeByte((byte) (isImagesInCarousal ? 0x01 : 0x00));
     }
 
     @SuppressWarnings("unused")
