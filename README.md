@@ -14,6 +14,7 @@ Carousal-Notification lets you make carousal type notification where user can na
 
 1. Slide animation on carousal
 2. Schedule Carousal. As of now you have to write a job schedular/alarm manager to scedular to schedule Carousal.
+3. Explore carousal notification using a service.
 
 # Screenshots
 
@@ -61,8 +62,87 @@ Step 3) Build the 'CarousalItem's need to be shown. One way is to parse through 
            
    Now this is the interesting part. All of the parts of CarousalItems are optional, lets go through them one by one
    
-   1)** Id **  : You may want to save unique id of the object so that you may know which object is clicked on carousal. You may use this id to further fetch details about the item. 
+   ** 1) Id **  : You may want to save unique id of the object so that you may know which object is clicked on carousal. You may use this id to further fetch details about the item. 
    Alternatively, you may save the entire object's json string into id if you don't have (or want to) individual item's detail api.
    
-   2) ** Title ** : Visible below the image of the carousal. Leave it null if you don't want to show any title.
-   3) ** Content ** : Visible below the title. Leave it null if you don't want to show any content.
+  ** 2) Title ** : Visible below the image of the carousal. Leave it null if you don't want to show any title.
+    
+  ** 3) Content ** : Visible below the title. Leave it null if you don't want to show any content.
+  ** 4) Image Url ** : Url of the image to be shown in carousal item. leave it null if there is no image
+  
+  If your carousal have images only, leave title and content null (say display only top images of the day). Alternatively, if your notification have rich content and no image (say top news today), just set image_url to null and show as much as content you want.
+  
+  ** 5) Type ** : If you have more than one type of carousal notification to be shown whose click event needs to be handled differently.Say one tell you top destinations to visit and other tells to top new offers. You me set a type to the item to know which type of carousal item is clicked inside the reciever.
+  
+  
+  Step 4) Add big Notification title and content (optional)
+  
+         carousal.setBigContentTitle("Quotes from everywhere!").setBigContentText("Notice these random quotes from around the world");
+
+  Optionally you may also want to let user click the notification outside the carousal itself. This will trigger an broadcast even when the user clicks other regions (Title and content of notifiction or Small notification.
+  
+          carousal.setOtherRegionClickable(true);  //by default it is false
+         
+  Step 5) Dispatch notification
+  
+         carousal.buildCarousal();
+         
+    
+         
+
+
+This is it!  A carousal with specified items will be show. Now if you want to handle the click of an item as well (which normally should be the case), you may add a broadcast reciever for that.
+  
+  Step 6) Make a broadcast receiver and handle carousal click. Whenever user clicks a carousal item(or other region, if it is enabled), a broadcast is sent to it which will contain the carousalItem data that is clicked. The bundle will be null if other region is clicked and not any carousal item itself.
+  
+         public class CarousalItemClickReceiver extends BroadcastReceiver {
+
+         @Override
+             public void onReceive(Context context, Intent intent) {
+                 Bundle bundle = intent.getExtras();
+                  if (bundle != null) {  //meaning some item is clicked
+                    //Get the carousal item that is clicked . Use the same key.
+                     CarousalItem item = bundle.getParcelable(Carousal.CAROUSAL_ITEM_CLICKED_KEY);
+                     if (item != null) {
+                         //Now we need to know where to redirect event
+                           String id = item.getId();
+                           //Now start an intent or anything else from here
+                      
+                     } else {  //Meaning other region is clicked and isOtherRegionClick is set to true.
+                               //Again handle by anything suitable here.
+                         Toast.makeText(context, "Other region clicked", Toast.LENGTH_LONG).show();
+                     }
+
+                 }
+             }
+         }
+         
+    Step 7) Register the broadcast receiver. Add the receiver with intent filter in the manifest file: 
+    
+         <?xml version="1.0" encoding="utf-8"?>
+         <manifest ...>
+             <application...>
+                 ...
+                 <receiver android:name=".CarousalItemClickReceiver">
+                     <intent-filter>
+                         <action android:name="in.mamga.CAROUSALNOTIFICATIONITEMCLICKED" />
+                     </intent-filter>
+                 </receiver>
+
+                 ...
+             </application>
+             </manifest>
+             
+     
+# Contributors
+
+* Contribute to the library by 
+ 1. Forking it and enhancing it
+ 2. Report issues and bugs
+ 3. Fork and make a better library :)
+
+**Contact Us**
+
+Get in touch with me with your suggestions, thoughts and queries at shaileshmamgain5@gmail.com
+  
+  
