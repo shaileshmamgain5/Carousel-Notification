@@ -1,6 +1,7 @@
 # Carousal Notification
 
 Carousal-Notification lets you make carousal type notification where user can navigate within the notification. Selected item can be obtained using a broadcast receiver.
+
 **Features Existing**
 
 1. Quick and easy set up with just a few lines of code.
@@ -41,15 +42,15 @@ Of course all this can be started from the notification receiver only. But that 
 
 Here is the **detailed steps**. It is assumed that you have fetched the data that need to be shown:
 
-Step 1) Build Carousal instance.
+**Step 1)** Build Carousal instance.
 
          Carousal carousal = Carousal.with(this).beginTransaction();
 
-Step 2) Set 'contentTitle' and 'contentText' which will be shown when notification is small. Its similar to normal notifications.
+**Step 2)** Set 'contentTitle' and 'contentText' which will be shown when notification is small. Its similar to normal notifications.
 
          carousal.setContentTitle("Your Title Here").setContentText("Your content description here");
          
-Step 3) Build the 'CarousalItem's need to be shown. One way is to parse through the list of fetched data to be shown and build and add carousal items one by one. View documentation for more info.
+**Step 3)** Build the 'CarousalItem's need to be shown. One way is to parse through the list of fetched data to be shown and build and add carousal items one by one. View documentation for more info.
 
           CarousalItem cItem = new CarousalItem("Item Id here", "Item Title", "Item Content","Picture Url");
           
@@ -62,20 +63,20 @@ Step 3) Build the 'CarousalItem's need to be shown. One way is to parse through 
            
    Now this is the interesting part. All of the parts of CarousalItems are optional, lets go through them one by one
    
-   ** 1) Id **  : You may want to save unique id of the object so that you may know which object is clicked on carousal. You may use this id to further fetch details about the item. 
+   **a) Id**  : You may want to save unique id of the object so that you may know which object is clicked on carousal. You may use this id to further fetch details about the item. 
    Alternatively, you may save the entire object's json string into id if you don't have (or want to) individual item's detail api.
    
-  ** 2) Title ** : Visible below the image of the carousal. Leave it null if you don't want to show any title.
+  **b) Title** : Visible below the image of the carousal. Leave it null if you don't want to show any title.
     
-  ** 3) Content ** : Visible below the title. Leave it null if you don't want to show any content.
-  ** 4) Image Url ** : Url of the image to be shown in carousal item. leave it null if there is no image
+  **c) Content** : Visible below the title. Leave it null if you don't want to show any content.
+  **d) Image Url** : Url of the image to be shown in carousal item. leave it null if there is no image
   
   If your carousal have images only, leave title and content null (say display only top images of the day). Alternatively, if your notification have rich content and no image (say top news today), just set image_url to null and show as much as content you want.
   
-  ** 5) Type ** : If you have more than one type of carousal notification to be shown whose click event needs to be handled differently.Say one tell you top destinations to visit and other tells to top new offers. You me set a type to the item to know which type of carousal item is clicked inside the reciever.
+  **e) Type** : If you have more than one type of carousal notification to be shown whose click event needs to be handled differently.Say one tell you top destinations to visit and other tells to top new offers. You me set a type to the item to know which type of carousal item is clicked inside the reciever.
   
   
-  Step 4) Add big Notification title and content (optional)
+  **Step 4)** Add big Notification title and content (optional)
   
          carousal.setBigContentTitle("Quotes from everywhere!").setBigContentText("Notice these random quotes from around the world");
 
@@ -83,7 +84,7 @@ Step 3) Build the 'CarousalItem's need to be shown. One way is to parse through 
   
           carousal.setOtherRegionClickable(true);  //by default it is false
          
-  Step 5) Dispatch notification
+  **Step 5)** Dispatch notification
   
          carousal.buildCarousal();
          
@@ -93,7 +94,7 @@ Step 3) Build the 'CarousalItem's need to be shown. One way is to parse through 
 
 This is it!  A carousal with specified items will be show. Now if you want to handle the click of an item as well (which normally should be the case), you may add a broadcast reciever for that.
   
-  Step 6) Make a broadcast receiver and handle carousal click. Whenever user clicks a carousal item(or other region, if it is enabled), a broadcast is sent to it which will contain the carousalItem data that is clicked. The bundle will be null if other region is clicked and not any carousal item itself.
+  **Step 6)** Make a broadcast receiver and handle carousal click. Whenever user clicks a carousal item(or other region, if it is enabled), a broadcast is sent to it which will contain the carousalItem data that is clicked. The bundle will be null if other region is clicked and not any carousal item itself.
   
          public class CarousalItemClickReceiver extends BroadcastReceiver {
 
@@ -117,7 +118,7 @@ This is it!  A carousal with specified items will be show. Now if you want to ha
              }
          }
          
-    Step 7) Register the broadcast receiver. Add the receiver with intent filter in the manifest file: 
+    **Step 7)** Register the broadcast receiver. Add the receiver with intent filter in the manifest file: 
     
          <?xml version="1.0" encoding="utf-8"?>
          <manifest ...>
