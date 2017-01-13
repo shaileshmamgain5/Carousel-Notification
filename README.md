@@ -17,6 +17,10 @@ Carousal-Notification lets you make carousal type notification where user can na
 2. Schedule Carousal. As of now you have to write a job schedular/alarm manager to scedular to schedule Carousal.
 3. Explore carousal notification using a service.
 
+**Requirements**
+
+1. "android.permission.INTERNET" required in manifest.
+
 # Screenshots
 
 <img src="https://raw.githubusercontent.com/shaileshmamgain5/Carousal-Notification/master/app/screenshots/carousal.png" width="200" height="350" />
@@ -145,5 +149,3 @@ This is it!  A carousal with specified items will be show. Now if you want to ha
 **Contact Us**
 
 Get in touch with me with your suggestions, thoughts and queries at shaileshmamgain5@gmail.com
-  
-  
