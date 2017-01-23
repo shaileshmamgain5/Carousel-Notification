@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 cItem.setType(TYPE_QUOTE);
                 carousal.addCarousalItem(cItem);
             }
+            carousal.setOtherRegionClickable(true);
             carousal.buildCarousal();
         }
     }
