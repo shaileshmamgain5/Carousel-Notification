@@ -2,7 +2,8 @@ package in.mamga.carousalnotification;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v7.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
 
 import java.util.ArrayList;
 
