@@ -3,11 +3,12 @@ package in.mamga.carousalnotificationmaster;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         Bundle extras = intent.getExtras();
         if (extras != null) {
             if (extras.containsKey(Carousal.CAROUSAL_ITEM_CLICKED_KEY)) {
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hideDialog() {
-        if (progressDialog != null) {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.hide();
             progressDialog = null;
         }
