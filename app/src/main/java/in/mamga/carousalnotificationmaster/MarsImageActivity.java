@@ -3,9 +3,10 @@ package in.mamga.carousalnotificationmaster;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -34,6 +35,7 @@ public class MarsImageActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         Bundle extras = intent.getExtras();
         if (extras != null) {
             if (extras.containsKey(PHOTO_KEY)) {
@@ -49,7 +51,7 @@ public class MarsImageActivity extends AppCompatActivity {
         }.getType();
         RoverItem item = new Gson().fromJson(photoString, type);
 
-        Picasso.with(this).load(item.getImg_src()).into(marsImage);
+        Picasso.get().load(item.getImg_src()).into(marsImage);
         sol.setText("Sol : " + item.getSol());
         earthDate.setText("EarthDate : " + item.getEarth_date());
         roverInfoObject.setText("Rover info object : " +  new Gson().toJson(item.getRover()).toString());
